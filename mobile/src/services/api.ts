@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Default loopback for Android Emulator.
 // In physical device debugging, replace this with your host computer's local IP (e.g. 192.168.1.50)
-export const API_BASE_URL = 'http://10.0.2.2:5000/api';
+export const API_BASE_URL = 'http://192.168.0.106:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -36,7 +36,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response) {
       // 401 Unauthorized: token expired or invalid
       if (error.response.status === 401 && !originalRequest._retry) {

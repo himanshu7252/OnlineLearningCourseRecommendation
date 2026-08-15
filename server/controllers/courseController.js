@@ -104,6 +104,7 @@ const seedCourses = async (req, res, next) => {
         duration: "12 Hours",
         price: 49.99,
         rating: 4.8,
+        enrollmentCount: 1250,
         requirements: ["Basic React knowledge", "JavaScript fundamentals"],
       },
       {
@@ -118,6 +119,7 @@ const seedCourses = async (req, res, next) => {
         duration: "8 Hours",
         price: 39.99,
         rating: 4.7,
+        enrollmentCount: 3120,
         requirements: ["No programming experience required"],
       },
       {
@@ -132,6 +134,7 @@ const seedCourses = async (req, res, next) => {
         duration: "15 Hours",
         price: 89.99,
         rating: 4.9,
+        enrollmentCount: 1840,
         requirements: ["Python programming", "Basic linear algebra & calculus"],
       },
       {
@@ -146,6 +149,7 @@ const seedCourses = async (req, res, next) => {
         duration: "20 Hours",
         price: 59.99,
         rating: 4.6,
+        enrollmentCount: 2450,
         requirements: ["HTML, CSS & basic JavaScript"],
       },
       {
@@ -160,6 +164,7 @@ const seedCourses = async (req, res, next) => {
         duration: "10 Hours",
         price: 29.99,
         rating: 4.5,
+        enrollmentCount: 980,
         requirements: ["Basic computer usage literacy"],
       },
       {
@@ -174,6 +179,7 @@ const seedCourses = async (req, res, next) => {
         duration: "18 Hours",
         price: 79.99,
         rating: 4.9,
+        enrollmentCount: 2150,
         requirements: ["Familiarity with at least one OOP language"],
       },
       {
@@ -188,6 +194,7 @@ const seedCourses = async (req, res, next) => {
         duration: "6 Hours",
         price: 19.99,
         rating: 4.8,
+        enrollmentCount: 1420,
         requirements: ["Basic JavaScript concepts"],
       },
       {
@@ -202,6 +209,7 @@ const seedCourses = async (req, res, next) => {
         duration: "5 Hours",
         price: 24.99,
         rating: 4.7,
+        enrollmentCount: 890,
         requirements: ["Solid JavaScript foundations"],
       },
       {
@@ -216,6 +224,7 @@ const seedCourses = async (req, res, next) => {
         duration: "7 Hours",
         price: 34.99,
         rating: 4.4,
+        enrollmentCount: 650,
         requirements: ["Basic IT and hardware knowledge"],
       },
       {
@@ -230,6 +239,7 @@ const seedCourses = async (req, res, next) => {
         duration: "14 Hours",
         price: 69.99,
         rating: 4.7,
+        enrollmentCount: 1120,
         requirements: ["Python programming", "Basic calculus"],
       }
     ];

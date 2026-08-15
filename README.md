@@ -1,217 +1,438 @@
-# Online Learning & Course Recommendation Mobile App
+# 🎓 EduRec: Full-Stack Online Learning & Course Recommendation App
 
-EduRec is an industry-oriented, full-stack cross-platform mobile application built using **React Native + TypeScript** on the frontend, and **Node.js + Express + MongoDB** on the backend. 
+EduRec is an industry-grade, full-stack cross-platform mobile application designed to personalize learning journeys. Built using **React Native (TypeScript)** on the mobile client and **Node.js, Express, and MongoDB** on the backend, it serves as a complete solution for course discovery, syllabus tracking, interactive evaluation, and smart skill profiling.
 
-The core feature of the platform is a **Personalized Hybrid Recommendation System** and a **Skill-Gap Analysis** engine that helps learners identify their missing skills for target career roles and recommends courses to close those gaps.
-
----
-
-## 🚀 Features
-
-*   **Secure Authentication**: JWT-based sign-up and login, with credentials persisted in local storage (`AsyncStorage`).
-*   **Learner Onboarding**: Interactive selection of experience levels, skill sets, and interests to customize recommendations.
-*   **Course Directory**: Search, filter by difficulty/category/skills, and browse detailed descriptions.
-*   **Dynamic Syllabus**: Locked lessons before enrollment, which unlock as interactive links once a student subscribes.
-*   **Lesson Player**: Simulated video player tracking completed status, watched durations, and supplementary resources.
-*   **Interactive Quizzes**: Multiple-choice lesson assessments with immediate feedback, scoring, passing limits, and answers explanation.
-*   **Progress Tracking**: Calculates course completion percentages and updates status flags (`ACTIVE`, `COMPLETED`).
-*   **Hybrid Recommendation Engine**: Incorporates user tags overlap, skill matching, collaborative filtering, popularity, and difficulty matches.
-*   **Skill-Gap Analyzer**: Select a target role (e.g. *React Native Developer*, *Data Scientist*) to see missing skills and bridge them with matching courses.
+The core differentiator of EduRec is its **intelligent hybrid recommendation engine** combined with a **Skill-Gap Analysis system**. Learners can pinpoint their target career tracks (such as Full-Stack Developer or Data Scientist), identify missing skills in their profile, and receive targeted course recommendations to close those gaps.
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Key Features
 
-*   **Mobile App**: React Native CLI, TypeScript, React Navigation (Stack & Bottom Tabs), Redux Toolkit, Axios, AsyncStorage.
-*   **Backend Server**: Node.js, Express.js, JWT, bcryptjs, CORS.
-*   **Database**: MongoDB, Mongoose (schemas, compound indexes, virtual populates).
+*   **🔒 Secure JWT Authentication**: User sign-ups and logins, with credentials persistently stored using `@react-native-async-storage/async-storage`.
+*   **📋 Interactive Learner Onboarding**: Step-by-step profile generation where users declare their experience level, technical skills, and learning interests.
+*   **🔍 Advanced Course Discovery**: Search, filter courses by category or difficulty level, and explore detailed course summaries.
+*   **📖 Dynamic Syllabus & Lesson Tracking**: Access structured course lessons. Unenrolled lessons are locked; once enrolled, interactive videos, descriptions, and materials become accessible.
+*   **🎥 Lesson Player**: Simulated video lecture interface that tracks completion status, playback duration, and hosts auxiliary learning resources.
+*   **📝 Interactive Quizzes**: Custom multiple-choice assessments for each lesson, offering instant feedback, detailed answer explanations, and automated score calculations.
+*   **📈 Smart Progress Analytics**: Real-time course completion percentage calculation, updating status flags (`ACTIVE`, `COMPLETED`) as students progress.
+*   **⚙️ Personalized Hybrid Recommendation Engine**: A custom recommendation algorithm combining Content-Based similarity (tags, categories, skill matching, difficulty levels, popularity) and User-to-User Collaborative Filtering.
+*   **🎯 Skill-Gap Analyzer**: A specialized tool mapping user profiles against pre-defined target roles, highlighting missing skills, and recommending courses specifically teaching those missing competencies.
 
 ---
 
-## 📊 Recommendation System Scoring Logic
+## 🛠️ Technology Stack
 
-EduRec uses a multi-level hybrid algorithm:
+### Mobile Frontend
+*   **Core Framework**: React Native (v0.87.0) powered by TypeScript (v6.0.3)
+*   **State Management**: Redux Toolkit & React Redux (v9.3.0) for unified global session, enrollment, progress, and recommendations state
+*   **Navigation**: React Navigation (v7) implementing Stack and Bottom Tab routers
+*   **API Client**: Axios (v1.19.0) with request interceptors for token attachment and response interceptors for global authentication handling
+*   **Local Storage**: `@react-native-async-storage/async-storage` for persisting user tokens
 
-### 1. Content-Based Score (Weight: 70%)
-The system extracts course features and matches them against the user profile:
-*   **Interest Score (30%)**: Number of matching tags divided by user's total selected interests.
-*   **Skill Score (30%)**: Overlap between course skills and user's current/target skills.
-*   **Category Match (20%)**: Binary check ($1.0$ or $0.0$) if course category overlaps with user interests.
-*   **Difficulty Match (10%)**: Matches experience level:
-    *   *Beginner*: Beginner ($1.0$), Intermediate ($0.5$), Advanced ($0.1$)
-    *   *Intermediate*: Intermediate ($1.0$), Beginner ($0.7$), Advanced ($0.5$)
-    *   *Advanced*: Advanced ($1.0$), Intermediate ($0.8$), Beginner ($0.4$)
-*   **Popularity Score (10%)**: Enrollment count normalized against maximum enrollments on the platform.
-
-$$\text{ContentScore} = (0.3 \cdot \text{Interest}) + (0.3 \cdot \text{Skill}) + (0.2 \cdot \text{Category}) + (0.1 \cdot \text{Difficulty}) + (0.1 \cdot \text{Popularity})$$
-
-### 2. Collaborative Filtering (Weight: 30%)
-*   Identifies peer users who are enrolled in similar courses.
-*   Extracts courses enrolled by those peers that the target user has **not** taken yet.
-*   Scores courses based on peer enrollment density:
-    $$\text{CollaborativeScore} = \frac{\text{PeerEnrollments}}{\text{TotalSimilarPeers}}$$
-
-### 3. Hybrid Ranking
-*   **Exclusion**: Already enrolled courses are strictly filtered out.
-*   **Combination**: If peer data is present, the final rank score is:
-    $$\text{FinalScore} = (0.7 \cdot \text{ContentScore}) + (0.3 \cdot \text{CollaborativeScore})$$
-    Otherwise, it defaults to $100\%$ ContentScore.
+### Backend REST API
+*   **Environment**: Node.js (v22+)
+*   **Web Framework**: Express.js (v4.18.2)
+*   **Database ODM**: Mongoose (v7.6.3) interfacing with MongoDB
+*   **Security & Encryption**: JSON Web Token (`jsonwebtoken`) and `bcryptjs` for secure password hashing and stateless REST authentication
+*   **Development Utilities**: `cors`, `dotenv` for environment variables, and `nodemon` for local hot-reloads
 
 ---
 
 ## 📁 Repository Structure
 
+The project follows a clean client-server division with isolated routing, models, screens, and components:
+
 ```text
-online-learning-course-recommendation-mobile/
-├── mobile/                  # React Native client folder
+OnlineLearningCourseRecommendation/
+├── mobile/                      # React Native Frontend Application
 │   ├── src/
-│   │   ├── components/      # Reusable UI elements (Cards, Bars, Stars)
-│   │   ├── hooks/           # Typed useDispatch/useSelector hooks
-│   │   ├── navigation/      # React Navigation parameters and stack routers
-│   │   ├── screens/         # Screen pages (Auth, Onboarding, Home, Player, Quiz)
-│   │   ├── services/        # Axios API clients
-│   │   ├── store/           # Redux Toolkit slices
-│   │   └── types/           # Interface specifications
-│   ├── App.tsx              # App root wrapper
-│   └── package.json
+│   │   ├── components/          # Reusable UI Components
+│   │   │   ├── CourseCard.tsx
+│   │   │   ├── ProgressBar.tsx
+│   │   │   ├── RatingStars.tsx
+│   │   │   └── RecommendationCard.tsx
+│   │   ├── hooks/               # Custom typed hooks
+│   │   │   ├── useAppDispatch.ts
+│   │   │   └── useAppSelector.ts
+│   │   ├── navigation/          # React Navigation stacks & bottom tabs
+│   │   │   ├── RootNavigator.tsx
+│   │   │   └── types.ts
+│   │   ├── screens/             # Screen components
+│   │   │   ├── CourseDetailsScreen.tsx
+│   │   │   ├── ExploreScreen.tsx
+│   │   │   ├── HomeScreen.tsx
+│   │   │   ├── LessonPlayerScreen.tsx
+│   │   │   ├── LoginScreen.tsx
+│   │   │   ├── MyLearningScreen.tsx
+│   │   │   ├── OnboardingScreen.tsx
+│   │   │   ├── ProfileScreen.tsx
+│   │   │   ├── QuizScreen.tsx
+│   │   │   ├── RecommendationsScreen.tsx
+│   │   │   └── RegisterScreen.tsx
+│   │   ├── services/            # Axios instance and API configuration
+│   │   │   └── api.ts
+│   │   ├── store/               # Redux Toolkit store and slices
+│   │   │   ├── authSlice.ts
+│   │   │   ├── courseSlice.ts
+│   │   │   ├── enrollmentSlice.ts
+│   │   │   ├── progressSlice.ts
+│   │   │   └── recommendationSlice.ts
+│   │   └── types/               # TypeScript interface specifications
+│   │       └── index.ts
+│   ├── App.tsx                  # Client entry wrapper
+│   └── package.json             # Frontend dependency configuration
 │
-├── server/                  # Node.js backend folder
-│   ├── config/              # MongoDB Mongoose configurations
-│   ├── controllers/         # Routing handlers (Auth, Course, Progress, Recs)
-│   ├── middleware/          # JWT auth guards, global error parsers
-│   ├── models/              # Mongoose schemas (User, Course, Progress, Quiz)
-│   ├── routes/              # Routing maps
-│   ├── server.js            # Express application boot entry
-│   └── package.json
+└── server/                      # Node.js & Express REST Backend
+    ├── config/                  # Configuration loaders (MongoDB)
+    │   └── db.js
+    ├── controllers/             # REST controller handlers
+    │   ├── authController.js
+    │   ├── courseController.js
+    │   ├── enrollmentController.js
+    │   ├── progressController.js
+    │   ├── quizController.js
+    │   └── recommendationController.js
+    ├── middleware/              # Express middlewares (auth guards, error handling)
+    │   ├── auth.js
+    │   └── errorHandler.js
+    ├── models/                  # Mongoose MongoDB schemas
+    │   ├── Bookmark.js
+    │   ├── Course.js
+    │   ├── Enrollment.js
+    │   ├── Lesson.js
+    │   ├── Progress.js
+    │   ├── Quiz.js
+    │   ├── Recommendation.js
+    │   └── User.js
+    ├── routes/                  # API endpoints definition
+    │   ├── authRoutes.js
+    │   ├── courseRoutes.js
+    │   ├── enrollmentRoutes.js
+    │   ├── progressRoutes.js
+    │   ├── quizRoutes.js
+    │   └── recommendationRoutes.js
+    ├── server.js                # Express app boot entry point
+    ├── .env                     # Local environment settings
+    └── package.json             # Backend dependency configuration
 ```
+
+### Key File Directories Quick Links:
+*   **Mobile Screens Directory**: [`mobile/src/screens`](file:///d:/AppDev/OnlineLearningCourseRecommendation/mobile/src/screens)
+*   **Mobile Redux Slices**: [`mobile/src/store`](file:///d:/AppDev/OnlineLearningCourseRecommendation/mobile/src/store)
+*   **Server Controllers**: [`server/controllers`](file:///d:/AppDev/OnlineLearningCourseRecommendation/server/controllers)
+*   **Server Database Models**: [`server/models`](file:///d:/AppDev/OnlineLearningCourseRecommendation/server/models)
+*   **Server API Routers**: [`server/routes`](file:///d:/AppDev/OnlineLearningCourseRecommendation/server/routes)
+*   **Server Entrypoint**: [`server/server.js`](file:///d:/AppDev/OnlineLearningCourseRecommendation/server/server.js)
+
+---
+
+## 📊 Recommendation System Architecture
+
+EduRec utilizes three custom-designed recommendation algorithms, implemented from scratch on the Express server:
+
+### 1. Personalized Hybrid Course Recommendation
+Calculates a composite recommendation score for all courses in which the learner is **not** currently enrolled.
+
+*   **Content-Based Scoring (Weight: 70%)**: Matches the course attributes to the user's saved profile:
+    *   **Interest Alignment (30%)**: The count of overlapping tags between the course tags and the user's declared interests, normalized by total user interests.
+    *   **Skill Overlap (30%)**: The count of course skills matching the user's skills, normalized by total course skills.
+    *   **Category Overlap (20%)**: Evaluates to $1.0$ if the course category aligns with any of the user's interests, else $0.0$.
+    *   **Difficulty Suitability (10%)**: Matches user experience levels to course difficulty:
+        *   *Beginner Profile*: Beginner course ($1.0$), Intermediate ($0.5$), Advanced ($0.1$).
+        *   *Intermediate Profile*: Intermediate course ($1.0$), Beginner ($0.7$), Advanced ($0.5$).
+        *   *Advanced Profile*: Advanced course ($1.0$), Intermediate ($0.8$), Beginner ($0.4$).
+    *   **Popularity Score (10%)**: The course's total enrollment count normalized by the maximum enrollment count on the platform.
+
+$$\text{ContentScore} = (0.3 \cdot \text{Interest}) + (0.3 \cdot \text{Skill}) + (0.2 \cdot \text{Category}) + (0.1 \cdot \text{Difficulty}) + (0.1 \cdot \text{Popularity})$$
+
+*   **Collaborative Filtering (Weight: 30%)**:
+    *   Identifies "peers" (other users) enrolled in at least one course the target user is currently taking.
+    *   Scans courses those peers have enrolled in that the target user has not yet started.
+    *   Computes density score:
+
+$$\text{CollabScore} = \frac{\text{PeerEnrollments}}{\text{TotalPeers}}$$
+
+*   **Hybrid Ranking**:
+    *   If the user has active enrollments and peer overlaps are found, the final rank score is:
+
+$$\text{FinalScore} = (0.7 \cdot \text{ContentScore}) + (0.3 \cdot \text{CollabScore})$$
+
+    *   If no peer overlap exists or the user has no active enrollments, the scoring defaults to $100\%$ content-based matching ($\text{FinalScore} = \text{ContentScore}$).
+
+---
+
+### 2. Course Similarity ("Because You Watched...")
+Recommends courses similar to a reference course (excluding the user's current enrollments) based on tag and category overlap:
+
+$$\text{RelatedScore} = (0.6 \cdot \text{TagOverlap}) + (0.4 \cdot \text{CategoryMatch})$$
+
+---
+
+### 3. Skill-Gap Course Recommendation
+Identifies the user's mismatch against specific career track skill pools:
+*   **Industry Role Requirements**:
+    *   `React Native Developer`: *React Native, TypeScript, Redux, REST APIs, Git, JavaScript*
+    *   `Full Stack Developer`: *React, JavaScript, HTML, CSS, Node, MongoDB, REST APIs, Git*
+    *   `Data Scientist`: *Python, Pandas, NumPy, Statistics, Data Visualization, Machine Learning, Scikit-Learn*
+    *   `AI Engineer`: *Python, Machine Learning, Neural Networks, AI, NLP, Computer Vision*
+*   **Gap Computation**: Filters the target role's required skills to extract those absent from the user's profile ($\text{MissingSkills}$).
+*   **Recommendation Score**: Evaluates non-enrolled courses that teach these missing skills, ranking them by coverage:
+
+$$\text{GapScore} = \frac{\text{MissingSkillsOverlap}}{\text{TotalMissingSkills}}$$
 
 ---
 
 ## 🔌 API Documentation
 
-All protected routes require a `Bearer <token>` header inside requests.
+Protected routes require a `Bearer <JWT_TOKEN>` header.
 
-| Method | Endpoint | Auth | Request Body / Query Params | Success Response (200/201) |
-|---|---|---|---|---|
+| HTTP Method | Endpoint | Access | Body / Query Parameters | Success Response (200/201) |
+| :--- | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/register` | Public | `{ name, email, password }` | `{ success: true, token, user }` |
 | `POST` | `/api/auth/login` | Public | `{ email, password }` | `{ success: true, token, user }` |
 | `GET` | `/api/auth/me` | Private | None | `{ success: true, user }` |
-| `PUT` | `/api/auth/profile` | Private | `{ name, skills, interests, ... }` | `{ success: true, user }` |
+| `PUT` | `/api/auth/profile` | Private | `{ name, skills, interests, experienceLevel }` | `{ success: true, user }` |
 | `GET` | `/api/courses` | Public | Query: `category`, `level`, `search` | `{ success: true, count, courses }` |
-| `POST` | `/api/courses/seed` | Public | None (Utility seeder) | `{ success: true, message }` |
+| `POST` | `/api/courses/seed` | Public | None (Admin seeder utility) | `{ success: true, message }` |
 | `GET` | `/api/courses/:id` | Public | None | `{ success: true, course }` |
 | `POST` | `/api/enrollments` | Private | `{ courseId }` | `{ success: true, enrollment }` |
 | `GET` | `/api/enrollments` | Private | None | `{ success: true, count, enrollments }` |
+| `GET` | `/api/enrollments/:id` | Private | None | `{ success: true, enrollment }` |
 | `POST` | `/api/progress` | Private | `{ courseId, lessonId, completed }` | `{ success: true, progressPercentage }` |
-| `GET` | `/api/quizzes/:courseId`| Private | Query: `lessonId` | `{ success: true, count, quizzes }` |
-| `POST` | `/api/quizzes/:id/submit`| Private | `{ answers: ["A", "C", ...] }` | `{ success: true, score, passed, feedback }` |
-| `GET` | `/api/recommendations` | Private | None | `{ success: true, recommendations }` |
-| `GET` | `/api/recommendations/because-you-watched/:courseId` | Private | None | `{ success: true, recommendations }` |
-| `GET` | `/api/recommendations/skill-gap` | Private | Query: `role` | `{ success: true, missingSkills, recommendations }` |
+| `GET` | `/api/progress/:courseId` | Private | None | `{ success: true, progress }` |
+| `GET` | `/api/quizzes/:courseId` | Private | Query: `lessonId` | `{ success: true, count, quizzes }` |
+| `POST` | `/api/quizzes/:id/submit` | Private | `{ answers: ["A", "C", ...] }` | `{ success: true, score, passed, feedback }` |
+| `GET` | `/api/recommendations` | Private | None | `{ success: true, count, recommendations }` |
+| `GET` | `/api/recommendations/because-you-watched/:courseId` | Private | None | `{ success: true, count, recommendations }` |
+| `GET` | `/api/recommendations/skill-gap` | Private | Query: `role` | `{ success: true, role, skillsRequired, userSkills, missingSkills, recommendations }` |
 
 ---
 
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
-*   Node.js (v18+)
-*   Java JDK 17
-*   Android Studio & configured SDK
-*   MongoDB running locally **OR** a MongoDB Atlas cluster.
+*   [Node.js](https://nodejs.org) (v18 or higher recommended, minimum v22.11 for mobile build compatibility)
+*   [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/downloads/) (JDK 17 recommended for Android)
+*   [Android Studio](https://developer.android.com/studio) with configured SDK tools and virtual device emulator
+*   [MongoDB](https://www.mongodb.com/try/download/community) running locally on standard port `27017` **OR** a MongoDB Atlas URI
 
-### 1. Environment Configuration
-Create a `.env` file in the root directory:
+### 1. Environment Configurations
+Create a copy of the configuration properties in `server/.env`:
 ```env
 PORT=5000
-# For Local MongoDB:
 MONGO_URI=mongodb://localhost:27017/online-learning-db
-# For MongoDB Atlas (replace placeholders):
-# MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/online-learning-db?retryWrites=true&w=majority
 JWT_SECRET=supersecretjwtkeyforrecommendationapp123!
+API_BASE_URL=http://localhost:5000/api
 ```
 
-### 2. Backend Installation
+> [!IMPORTANT]
+> When testing on a **physical Android device**, update `API_BASE_URL` in `server/.env` and `API_BASE_URL` in [`mobile/src/services/api.ts`](file:///d:/AppDev/OnlineLearningCourseRecommendation/mobile/src/services/api.ts) from `localhost` to your computer's local area network (LAN) IP (e.g. `http://192.168.1.50:5000/api`).
+> When running in an **Android Emulator**, use `http://10.0.2.2:5000/api` for API resolution.
+
+### 2. Backend Server Setup
+Navigate into the server folder, install the modules, seed local courses, and spin up the developer server:
 ```bash
 cd server
 npm install
-# Seed the database and start the dev server
+
+# Seed the database and start the Express server
 npm run dev
 ```
-Verify the seeder by visiting: `http://localhost:5000/api/courses/seed` using Postman (a POST request) to populate data.
+Verify the backend is live by opening `http://localhost:5000` in your web browser. If it is your first time starting up, trigger course seeding by executing a POST request to `http://localhost:5000/api/courses/seed` using Postman.
 
-### 3. Mobile Client Installation
-Ensure your `.env` settings are updated. In a physical Android device or emulator, locate your host computer's LAN IP address (e.g., `192.168.1.50`).
-Edit `mobile/src/services/api.ts` and set:
-```typescript
-export const API_BASE_URL = 'http://192.168.1.50:5000/api'; // Replace with LAN IP
-```
-Then execute:
+### 3. Mobile Client Setup
+Navigate into the mobile directory, install dependencies, and build the client binaries:
 ```bash
 cd mobile
 npm install
-# Boot up Metro Bundler
+
+# Step 3.1: Start the Metro Bundle compiler
 npx react-native start
-# Connect physical device via USB, verify ADB, and run the app
-adb devices
+
+# Step 3.2 (In a new terminal window): Connect your device / emulator and run the app
 npx react-native run-android
 ```
+*(If on macOS targeting iOS development, execute `cd ios && pod install && cd ..` before running `npx react-native run-ios`.)*
 
 ---
 
-## 🎓 Interview Preparation (Q&As)
+## 🎓 Interview Q&A Guide
 
 ### React Native & State Management
-1.  **What is React Native and how does it bridge code?**
-    *Answer*: React Native compiles JavaScript into native platform views. It compiles rendering instructions and passes them asynchronously through a "bridge" (or JSI in newer versions) to map React elements into native UI structures (such as Android Views or iOS UIViews).
-2.  **Why did you use Redux Toolkit in this project?**
-    *Answer*: Redux Toolkit manages global states like user authentication tokens, active course enrollments, and lesson progress records. Slices manage reducer states cleanly while async thunks isolate Axios REST request logic from layout pages.
-3.  **Explain the navigation structure of the app.**
-    *Answer*: We used React Navigation. A root stack router listens to the user session token in Redux. If unauthenticated, it boots the `AuthNavigator`. If authenticated but lacking onboarding inputs, it mounts `OnboardingNavigator`. Otherwise, it unlocks the tab navigator which nests course detail stacks and lesson players.
-4.  **How did you persist the user's logged-in session?**
-    *Answer*: Upon successful registration or login, the Express server responds with a JWT token. The app saves this string using React Native's `@react-native-async-storage/async-storage`. On mount, a loading splash verifies this token and queries the `/auth/me` endpoint to restore credentials.
-5.  **How do you handle API errors gracefully in the client?**
-    *Answer*: We implemented Axios response interceptors. If a request experiences a network failure, it yields a descriptive error message. If a `401 Unauthorized` status is caught (indicating token expiration), the interceptor clears local storage and forces the user to the log-in deck.
 
-### Backend & Database
-6.  **Why did you choose Node.js and Express?**
-    *Answer*: Node's asynchronous event loop manages high volumes of non-blocking I/O queries efficiently, which is ideal for a mobile backend. Express allows us to build REST controllers, JWT middleware guards, and structured routers with minimal boilerplate.
-7.  **What is Mongoose and how does it benefit MongoDB development?**
-    *Answer*: Mongoose is an Object Data Modeling (ODM) library for MongoDB. It provides schema validation, defines composite index rules (like preventing duplicate enrollments via `userId: 1, courseId: 1`), and supports virtual properties for sub-document query population.
-8.  **How does JWT authentication operate secure REST routes?**
-    *Answer*: On credentials validation, the server signs a user payload with a server-private secret key using `jsonwebtoken`. Protected endpoints verify this signature using auth guard middleware before granting controller access.
-9.  **Why did you choose `bcryptjs` over native `bcrypt`?**
-    *Answer*: Native `bcrypt` compiles C++ binaries during node module installation, which frequently throws compilation errors on Windows environments lacking Microsoft Visual Studio build tooling. `bcryptjs` is a pure JavaScript alternative that installs cleanly and runs securely.
-10. **Explain how you prevented duplicate enrollments in the database.**
-    *Answer*: We implemented a compound index on the Mongoose `EnrollmentSchema` referencing both `userId` and `courseId` with a `{ unique: true }` constraint. The controller also executes a pre-check query, responding with a `400 Bad Request` if a subscription already exists.
+<details>
+<summary>1. What is React Native and how does it bridge code?</summary>
+<blockquote>
+React Native allows developers to write cross-platform mobile apps using JavaScript/TypeScript and React. It achieves native rendering through a "bridge" (or the newer JSI architecture) that communicates asynchronously between the JavaScript runtime and the native thread. It translates React core elements (like <code>&lt;View&gt;</code> or <code>&lt;Text&gt;</code>) into direct native views (e.g. <code>android.view.ViewGroup</code> or <code>UIView</code>), matching native device speed.
+</blockquote>
+</details>
 
-### Recommendation System & Analytics
-11. **Explain the mathematical formula behind your hybrid scoring engine.**
-    *Answer*: The engine generates a composite score. Content matches weight $70\%$ (sub-split: $30\%$ user tag overlap, $30\%$ skills match, $20\%$ category match, $10\%$ difficulty level check, and $10\%$ course popularity volume). Collaborative filtering weights $30\%$ by density mapping of courses enrolled by peers who took identical classes.
-12. **How does "Because You Watched" course similarity operate?**
-    *Answer*: When viewing related items, the controller inspects the reference course's tags and category. It calculates tag overlap ($60\%$ weight) and category match ($40\%$ weight) against all candidate courses, ranking relevant topics.
-13. **How does the Skill-Gap Analysis function?**
-    *Answer*: The backend stores target skills lists required by roles (e.g. *React Native Developer* requires Git, Redux, REST, etc.). The engine subtracts the user's possessed profile skills from the target list, returning missing skills and recommending courses teaching those skills.
-14. **What is the "Cold Start" problem and how did you resolve it?**
-    *Answer*: A cold start occurs when a new user joins and has no enrollment history, or a new course is added with no subscribers. We resolve this by requesting user interests/skills during onboarding to calculate interest scores, and fall back to popularity ratings.
-15. **How did you prevent recommended courses from including enrolled items?**
-    *Answer*: The recommendation controller queries the `Enrollment` collection for the active user, extracts a list of enrolled `courseId` strings, and filters them out of candidate lists during candidates generation.
-16. **Why did you include popularity and difficulty matching in the algorithm?**
-    *Answer*: Solely matching keywords can lead to recommending beginner courses to advanced developers or obscure low-quality courses. Factoring in normalized enrollment volumes (popularity) and matching user experience levels ensures high-quality, relevant results.
-17. **How is overall course progress percentage updated?**
-    *Answer*: Upon lesson completion or quiz passing, a `Progress` entry is created. The controller counts total lessons for the course, finds how many progress records are flagged `completed` by the user, and calculates:
-    $$\text{Percentage} = \frac{\text{CompletedLessons}}{\text{TotalLessons}} \cdot 100$$
-    This value is then saved in the user's `Enrollment` document.
-18. **How does the quiz grading pipeline update progress?**
-    *Answer*: When a quiz is submitted, the controller grades options against the answer key. If the percentage is $\ge$ the passing limit, it marks the lesson as completed in `Progress` and recalculates the overall course percentage.
-19. **How would you scale this recommendation system with millions of users?**
-    *Answer*: In-memory scoring in Node becomes slow with large datasets. We would offload collaborative scoring to a pipeline like Apache Spark, cache results in Redis, utilize vector database embeddings (such as Milvus or Pinecone) for similarity checks, and run calculations in background jobs.
-20. **What are the key Version 2 features you would prioritize?**
-    *Answer*: I would prioritize integrating AWS S3 for streaming video storage, real-time push notifications for learning streaks, downloadable offline media playback, and machine learning models for vector-based semantic search.
+<details>
+<summary>2. Why did you use Redux Toolkit in this project instead of React Context?</summary>
+<blockquote>
+Redux Toolkit was chosen to handle complex, heavily dynamic global states—including user sessions, enrollment status trackers, quiz results, and recommendations. While React Context is excellent for simple, static data, Redux Toolkit prevents unnecessary re-renders of unrelated child views by using state selectors. It also separates API fetch logs, error handling, and local storage writes inside async thunk middleware.
+</blockquote>
+</details>
+
+<details>
+<summary>3. Explain the navigation structure of the app.</summary>
+<blockquote>
+The app uses a <code>NavigationContainer</code> nesting a <code>RootStackNavigator</code>. It dynamically toggles navigation pathways depending on user session states fetched from Redux:
+<ul>
+  <li><strong>Unauthenticated Flow</strong>: Directs users to the <code>AuthNavigator</code> (Login/Register).</li>
+  <li><strong>Onboarding Flow</strong>: Displays the <code>OnboardingNavigator</code> if a logged-in user has not selected interests/skills yet.</li>
+  <li><strong>Main Application Flow</strong>: Unlocks a <code>BottomTabNavigator</code> containing 5 primary view decks (Home, Explore, My Learning, Recommendations, Profile) and exposes modular overlays like Course Details, Lesson Player, and Quiz screens.</li>
+</ul>
+</blockquote>
+</details>
+
+<details>
+<summary>4. How did you persist the user's logged-in session?</summary>
+<blockquote>
+Upon successful login or registration, the backend server returns a signed JWT. The React Native app stores this token locally using <code>@react-native-async-storage/async-storage</code>. When the app initializes, an auth slice initialization thunk verifies if the token exists, executes an API request to <code>/api/auth/me</code>, and restores the user's Redux state, skipping the login screen entirely.
+</blockquote>
+</details>
+
+<details>
+<summary>5. How do you handle API errors gracefully in the client?</summary>
+<blockquote>
+We configured Axios response interceptors in <code>mobile/src/services/api.ts</code>. If the request encounters a network dropout, it returns a readable fallback message. If the backend returns a <code>401 Unauthorized</code> status (token expired or altered), the interceptor immediately clears AsyncStorage, clears Redux state, and pushes the user back to the login screen.
+</blockquote>
+</details>
+
+<details>
+<summary>6. What is the difference between React Native CLI and Expo, and why did you choose the CLI?</summary>
+<blockquote>
+Expo is a managed wrapper that handles native iOS/Android builds automatically but restricts control over native C++/Java/Objective-C configurations. React Native CLI gives direct access to native project folders (<code>/android</code> and <code>/ios</code>), allowing full customization of packages, native bridges, build scripts, and direct native module integrations. It represents standard practice for production-grade enterprise apps.
+</blockquote>
+</details>
+
+<details>
+<summary>7. What are custom hooks, and why did you use them in the mobile folder?</summary>
+<blockquote>
+Custom hooks are reusable functions that abstract React state logic. In this project, we built typed wrappers: <code>useAppDispatch</code> and <code>useAppSelector</code>. These custom hooks provide type-safe dispatching and selection against the Redux store's <code>RootState</code>, preventing runtime crashes and ensuring full autocomplete support.
+</blockquote>
+</details>
+
+<details>
+<summary>8. How does safe area handling work in React Native?</summary>
+<blockquote>
+Different mobile screens have physical obstructions like notches, camera holes, and rounded status lines. We imported <code>react-native-safe-area-context</code> to wrap app layouts inside <code>SafeAreaView</code>, dynamically computing safe layout bounds so that headers and bottom tabs do not clip behind hardware boundaries.
+</blockquote>
+</details>
+
+### Backend & Database Architecture
+
+<details>
+<summary>9. Why did you choose Node.js and Express for the server stack?</summary>
+<blockquote>
+Node.js offers an asynchronous, event-driven, non-blocking I/O runtime, making it exceptionally fast at handling high concurrent requests (e.g. tracking video progress, fetching course metadata, and serving recommendations). Express provides a lightweight framework to organize routes, mount JWT middleware guards, and implement structured controllers.
+</blockquote>
+</details>
+
+<details>
+<summary>10. What is Mongoose, and how does it benefit MongoDB development?</summary>
+<blockquote>
+Mongoose is an Object Data Modeling (ODM) library for MongoDB. It provides schema validation rules, defines default parameters, structures references between collections (e.g., links Enrollment to Course and User), supports virtual properties (like course lesson populating), and enforces constraints (e.g. compound indices).
+</blockquote>
+</details>
+
+<details>
+<summary>11. How does JWT authentication operate on secure REST routes?</summary>
+<blockquote>
+When a user logs in, the backend signs a payload (containing the user ID) using a private key and the <code>jsonwebtoken</code> library. The client stores this string and sends it inside the HTTP headers (<code>Authorization: Bearer &lt;token&gt;</code>) for subsequent requests. The Express auth middleware verifies the signature. If valid, it decodes the payload, queries user records, and mounts the active user details onto the <code>req.user</code> object.
+</blockquote>
+</details>
+
+<details>
+<summary>12. Why did you choose `bcryptjs` over the native `bcrypt` package?</summary>
+<blockquote>
+The native <code>bcrypt</code> package compiles C++ binaries during installation, which frequently fails on host machines (especially Windows) lacking C++ compilers or Visual Studio build tools. <code>bcryptjs</code> is a pure JavaScript rewrite. It installs reliably across all host operating systems without performance bottlenecks.
+</blockquote>
+</details>
+
+<details>
+<summary>13. Explain how you prevented duplicate enrollments in the database.</summary>
+<blockquote>
+We implemented a compound unique index on the Mongoose Enrollment model: <code>EnrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true })</code>. If a duplicate enrollment request passes API checks, MongoDB rejects the insert write and throws an error, which the Express global error handler parses into a clean <code>400 Bad Request</code> response.
+</blockquote>
+</details>
+
+<details>
+<summary>14. How does virtual populate work in your Course schema?</summary>
+<blockquote>
+In MongoDB, storing arrays of lesson sub-documents inside the course document can cause documents to exceed the 16MB document size limit. Instead, our Course model defines a virtual property <code>lessons</code> referencing the Lesson schema. When fetching a course, calling <code>.populate('lessons')</code> performs an optimized lookup query matching <code>Lesson.courseId</code> with <code>Course._id</code> dynamically.
+</blockquote>
+</details>
+
+### Recommendation Engine & Analytics Algorithms
+
+<details>
+<summary>15. Explain the math behind your Personalized Hybrid Scoring Engine.</summary>
+<blockquote>
+The system generates a recommendation score ($0.0$ to $1.0$) for candidate courses using:
+$$\text{FinalScore} = 0.7 \cdot \text{ContentScore} + 0.3 \cdot \text{CollabScore}$$
+where:
+<ul>
+  <li><strong>ContentScore</strong>: Evaluates interest tags overlap ($30\%$), skill overlap ($30\%$), category match ($20\%$), experience difficulty matching ($10\%$), and normalized course popularity ($10\%$).</li>
+  <li><strong>CollabScore</strong>: Calculates the enrollment density of candidate courses among peer users who share active course enrollments with the target user.</li>
+</ul>
+If the user has no active enrollments or no similar peers are found, the algorithm falls back to $100\%$ ContentScore.
+</blockquote>
+</details>
+
+<details>
+<summary>16. How does "Because You Watched" course similarity calculate recommendations?</summary>
+<blockquote>
+When a student views a course details page, the related recommendation endpoint evaluates similar items based on:
+$$\text{RelatedScore} = (0.6 \cdot \text{TagOverlap}) + (0.4 \cdot \text{CategoryMatch})$$
+It scores non-enrolled courses by comparing their tags and category metadata against the reference course, sorting them to return the top 4 related items.
+</blockquote>
+</details>
+
+<details>
+<summary>17. How does the Skill-Gap Analysis function?</summary>
+<blockquote>
+The backend maintains required technical skill lists for target industry career paths (e.g. React Native Developer, Full Stack Developer, Data Scientist, AI Engineer). When requested, the controller compares the required skills list against the user's current skills. It isolates the missing skills, computes a coverage ratio for candidate courses, and suggests courses containing those missing topics.
+</blockquote>
+</details>
+
+<details>
+<summary>18. What is the "Cold Start" problem, and how did you resolve it?</summary>
+<blockquote>
+A cold start occurs when a new user joins (with no enrollments) or a new course is uploaded (with no user ratings or enrollments). We resolve this in two ways:
+<ol>
+  <li><strong>New User</strong>: We require interests, skills, and experience selections during onboarding. The system uses these content metrics to recommend courses before any enrollment data exists.</li>
+  <li><strong>New Course</strong>: We normalize popularity against active course data and include category matching to ensure new items can still yield high content match scores.</li>
+</ol>
+</blockquote>
+</details>
+
+<details>
+<summary>19. How is the overall course progress percentage updated?</summary>
+<blockquote>
+When a student completes a lesson or passes a lesson quiz, a Progress record is created with <code>completed: true</code>. The controller queries the total count of lessons associated with the course, counts the user's completed progress records for that course, and updates the Enrollment document's progress percentage:
+$$\text{Percentage} = \left(\frac{\text{CompletedLessons}}{\text{TotalLessons}}\right) \cdot 100$$
+If this matches $100$, the Enrollment status flag updates from <code>ACTIVE</code> to <code>COMPLETED</code>.
+</blockquote>
+</details>
+
+<details>
+<summary>20. How would you scale this recommendation system to support millions of users?</summary>
+<blockquote>
+Calculating hybrid recommendations synchronously on the Node.js main thread degrades server response times at scale. To resolve this:
+<ol>
+  <li>We would pre-calculate collaborative filtering indexes in background batch jobs using Apache Spark or Python script pipelines.</li>
+  <li>We would store pre-calculated similarity scores in a fast key-value database like Redis.</li>
+  <li>We would represent courses and user profiles as vectors and utilize vector search databases (like Pinecone, Milvus, or FAISS) to calculate cosine similarity matches in milliseconds.</li>
+</ol>
+</blockquote>
+</details>
 
 ---
 
 ## 👔 Non-Technical HR Summary
 
-"I developed a full-stack mobile learning platform named **EduRec** that personalized course discovery for students using React Native, TypeScript, and MongoDB. The application allows students to onboard their skills and interests, browse a premium course catalog, track lesson progress, and take quizzes to earn credits.
+"I developed **EduRec**, a full-stack mobile learning application built with **React Native**, **TypeScript**, and **MongoDB** that delivers a highly personalized course discovery interface. The application features user onboarding, progress tracking, dynamic video syllabus locks, and interactive lesson quizzes.
 
-The core highlight of this project is a **hybrid recommendation system** that scores courses based on user interests, popular trends, and similar student behaviors. It also features a **skill-gap analysis tool** that compares a student's skills against industry roles like React Native Developer, lists their missing skills, and recommends specific courses to help them qualify. This project gave me solid, hands-on experience in full-stack mobile development, API security, and personalization algorithms."
+The technical highlight of the project is the custom-built **personalized recommendation engine**. Using a hybrid scoring algorithm, the server evaluates course popularity, user interest tags, experience level difficulty, and collaborative peer enrollment patterns. Additionally, I implemented a **Skill-Gap Analysis tool** that lets students select a target industry career (like Full-Stack Developer or AI Engineer), displays their missing skills, and recommends specific courses to bridge that gap. This project demonstrates strong proficiency in full-stack mobile architecture, database modeling, REST API security, and personalization algorithms."
