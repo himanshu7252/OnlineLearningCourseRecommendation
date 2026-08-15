@@ -49,7 +49,7 @@ export const ExploreScreen = ({ navigation }: Props) => {
     if (search.trim()) filters.search = search.trim();
     if (selectedCategory !== 'All') filters.category = selectedCategory;
     if (selectedLevel !== 'All Levels') filters.level = selectedLevel;
-    
+
     dispatch(fetchCourses(filters));
   };
 
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+
   },
   searchHeader: {
     paddingHorizontal: 16,
@@ -266,6 +267,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 84
   },
   loadingContainer: {
     flex: 1,

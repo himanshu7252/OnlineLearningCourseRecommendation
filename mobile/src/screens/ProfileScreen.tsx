@@ -28,13 +28,8 @@ export const ProfileScreen = ({ navigation }: Props) => {
   };
 
   const handleResetOnboarding = () => {
-    // Clear skills/interests to trigger Onboarding routing check in RootNavigator
-    dispatch(
-      updateUserProfile({
-        skills: [],
-        interests: [],
-      })
-    );
+    // Navigate to Onboarding screen without clearing current selections
+    navigation.navigate('Onboarding' as any);
   };
 
   const enrolledCount = enrollments.length;
@@ -118,7 +113,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
         {/* Preference Settings Reset */}
         <View style={styles.actionSection}>
           <TouchableOpacity style={styles.resetBtn} onPress={handleResetOnboarding}>
-            <Text style={styles.resetBtnText}>Edit Skills & Interests Onboarding ⚙️</Text>
+            <Text style={styles.resetBtnText}>Edit Skills & Interests Onboarding</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
@@ -137,7 +132,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 100,
   },
   profileHeader: {
     alignItems: 'center',

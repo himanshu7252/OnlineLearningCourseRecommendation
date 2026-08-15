@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { updateUserProfile } from '../store/authSlice';
 
@@ -49,11 +50,19 @@ const AVAILABLE_SKILLS = [
 const EXPERIENCES = ['Beginner', 'Intermediate', 'Advanced'] as const;
 
 export const OnboardingScreen = () => {
-  const [level, setLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Beginner');
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.auth);
+  const { user, loading } = useAppSelector((state) => state.auth);
+
+  const [level, setLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>(
+    () => user?.experienceLevel || 'Beginner'
+  );
+  const [selectedInterests, setSelectedInterests] = useState<string[]>(
+    () => user?.interests || []
+  );
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(
+    () => user?.skills || []
+  );
 
   const toggleInterest = (interest: string) => {
     if (selectedInterests.includes(interest)) {
@@ -88,7 +97,16 @@ export const OnboardingScreen = () => {
         skills: selectedSkills,
         learningGoals: selectedInterests.map(i => `Become an expert in ${i}`),
       })
-    );
+    )
+      .unwrap()
+      .then(() => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        }
+      })
+      .catch((err: any) => {
+        Alert.alert('Error', err.message || 'Failed to save personalization settings');
+      });
   };
 
   return (
@@ -203,6 +221,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 24,
     paddingBottom: 40,
+    paddingTop: 60
   },
   header: {
     alignItems: 'center',

@@ -200,7 +200,7 @@ const seedCourses = async (req, res, next) => {
       {
         title: "TypeScript Masterclass",
         description: "Write clean, type-safe, error-free applications. Master interfaces, generics, utility types, and strict configs.",
-        thumbnail: "https://images.unsplash.com/photo-1618401471353-b98aedd07871?auto=format&fit=crop&w=800&q=80",
+        thumbnail: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=800&q=80",
         instructor: "Anders Hejlsberg",
         category: "Web Development",
         level: "Intermediate",
@@ -230,7 +230,7 @@ const seedCourses = async (req, res, next) => {
       {
         title: "AI with Python",
         description: "Build intelligent computer agents. Cover Natural Language Processing, computer vision, and expert decision trees in Python.",
-        thumbnail: "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80",
+        thumbnail: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
         instructor: "Sam Altman",
         category: "AI & Machine Learning",
         level: "Intermediate",

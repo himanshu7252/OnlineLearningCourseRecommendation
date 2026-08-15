@@ -37,11 +37,11 @@ export const RecommendationsScreen = ({ navigation }: Props) => {
 
   useEffect(() => {
     dispatch(fetchRecommendations());
-    
+
     if (watchedReferenceCourse) {
       dispatch(fetchRelatedRecommendations(watchedReferenceCourse._id));
     }
-    
+
     dispatch(fetchSkillGapRecommendations('React Native Developer')); // Default role
   }, [dispatch, watchedReferenceCourse?._id]);
 
@@ -131,7 +131,7 @@ export const RecommendationsScreen = ({ navigation }: Props) => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.gapCard}>
             <Text style={styles.roleTitle}>Target Role: {skillGap.role}</Text>
-            
+
             <Text style={styles.gapLabel}>Current Gap Breakdown:</Text>
             <View style={styles.skillComparison}>
               {skillGap.skillsRequired.map((skill) => {
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+
   },
   tabContainer: {
     flexDirection: 'row',
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
     paddingHorizontal: 8,
+
   },
   tab: {
     flex: 1,
@@ -250,6 +252,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 84
   },
   scrollContainer: {
     padding: 16,

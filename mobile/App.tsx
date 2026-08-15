@@ -12,7 +12,7 @@ const App = () => {
       <Provider store={store}>
         <StatusBar
           barStyle="light-content"
-          backgroundColor="#0F172A"
+          {...{ backgroundColor: "#0F172A" }}
         />
         <RootNavigator />
       </Provider>

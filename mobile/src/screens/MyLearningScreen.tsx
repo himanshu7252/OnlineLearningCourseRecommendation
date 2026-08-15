@@ -51,7 +51,7 @@ export const MyLearningScreen = ({ navigation }: Props) => {
             renderItem={({ item }) => {
               const course = item.courseId;
               if (!course) return null;
-              
+
               return (
                 <View style={styles.enrollmentCard}>
                   {course.thumbnail ? (
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 84
   },
   enrollmentCard: {
     backgroundColor: '#ffffff',

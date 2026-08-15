@@ -76,7 +76,7 @@ export const HomeScreen = ({ navigation }: Props) => {
         {/* Header Section */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Good Morning, {user?.name || 'Learner'} 👋</Text>
+            <Text style={styles.greeting}>Good Morning, {user?.name || 'Learner'}</Text>
             <Text style={styles.welcomeSubtitle}>Ready to acquire new skills today?</Text>
           </View>
           <TouchableOpacity onPress={handleRefresh} style={styles.refreshBtn}>
@@ -87,7 +87,7 @@ export const HomeScreen = ({ navigation }: Props) => {
         {/* Continue Learning Widget */}
         {continueCourse && continueCourse.courseId ? (
           <View style={styles.continueCard}>
-            <Text style={styles.sectionHeader}>Continue Learning 📖</Text>
+            <Text style={styles.sectionHeader}>Continue Learning</Text>
             <View style={styles.continueContent}>
               <Text style={styles.continueTitle}>{continueCourse.courseId.title}</Text>
               <Text style={styles.continueInstructor}>by {continueCourse.courseId.instructor}</Text>
@@ -104,7 +104,7 @@ export const HomeScreen = ({ navigation }: Props) => {
                   })
                 }
               >
-                <Text style={styles.resumeText}>Resume Course ▶️</Text>
+                <Text style={styles.resumeText}>Resume Course</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -113,7 +113,7 @@ export const HomeScreen = ({ navigation }: Props) => {
         {/* Recommended For You Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionHeader}>Recommended For You ⭐</Text>
+            <Text style={styles.sectionHeader}>Recommended For You</Text>
             <TouchableOpacity onPress={() => navigation.navigate('MainApp', { screen: 'RecommendationsTab' })}>
               <Text style={styles.seeAll}>See Details</Text>
             </TouchableOpacity>
@@ -145,7 +145,7 @@ export const HomeScreen = ({ navigation }: Props) => {
 
         {/* Skill-Gap Analysis Module */}
         <View style={styles.skillGapCard}>
-          <Text style={styles.skillGapHeader}>Skill Gap Analyzer 🎯</Text>
+          <Text style={styles.skillGapHeader}>Skill Gap Analyzer</Text>
           <Text style={styles.skillGapSubtitle}>
             Select a career role to measure your skills and view targeted recommendations:
           </Text>
@@ -176,7 +176,6 @@ export const HomeScreen = ({ navigation }: Props) => {
                     );
                     return (
                       <View key={skill} style={styles.skillCheckItem}>
-                        <Text style={styles.checkIcon}>{hasSkill ? '✅' : '❌'}</Text>
                         <Text style={[styles.skillCheckText, !hasSkill && styles.missingSkillText]}>
                           {skill}
                         </Text>
@@ -201,7 +200,7 @@ export const HomeScreen = ({ navigation }: Props) => {
                         <Text style={styles.gapCourseTitle}>{rec.course.title}</Text>
                         <Text style={styles.gapCourseBadge}>Teaches: {rec.matchedSkills.join(', ')}</Text>
                       </View>
-                      <Text style={styles.gapCourseAction}>Enroll Now ➡️</Text>
+                      <Text style={styles.gapCourseAction}>Enroll Now</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -216,7 +215,7 @@ export const HomeScreen = ({ navigation }: Props) => {
 
         {/* Popular Courses Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Popular Courses 🔥</Text>
+          <Text style={styles.sectionHeader}>Popular Courses</Text>
           {popularCourses.map(course => (
             <CourseCard
               key={course._id}
@@ -237,6 +236,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
+    paddingBottom: 60
   },
   header: {
     flexDirection: 'row',
