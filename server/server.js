@@ -7,8 +7,8 @@ const errorHandler = require('./middleware/errorHandler');
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB Database
-connectDB();
+// Connect to MongoDB Database (initiate connection early on cold start)
+connectDB().catch((err) => console.error(`MongoDB Early Connection Error: ${err.message}`));
 
 const app = express();
 
@@ -21,6 +21,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
+});
+
+// Ensure database is connected before handling any requests (critical for serverless)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(new Error(`Database connection error: ${error.message}`));
+  }
 });
 
 // Mount Routes
