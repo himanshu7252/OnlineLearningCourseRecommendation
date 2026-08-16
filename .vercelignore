@@ -1,0 +1,9 @@
+# Ignore mobile app files since Vercel is only deploying the backend server
+mobile/
+
+# Ignore local dependencies and system files
+node_modules/
+.git/
+.github/
+.vscode/
+*.log
