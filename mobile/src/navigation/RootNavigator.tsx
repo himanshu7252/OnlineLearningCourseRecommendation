@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import BootSplash from 'react-native-bootsplash';
 import { ActivityIndicator, View, StyleSheet, Text, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import * as shape from 'd3-shape';
@@ -14,6 +15,7 @@ import { RootStackParamList, AuthStackParamList, OnboardingStackParamList, AppTa
 // Import Screens (we will create these next)
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
@@ -34,6 +36,7 @@ const AuthNavigator = () => (
   <AuthStack.Navigator screenOptions={{ headerShown: false }}>
     <AuthStack.Screen name="Login" component={LoginScreen} />
     <AuthStack.Screen name="Register" component={RegisterScreen} />
+    <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
   </AuthStack.Navigator>
 );
 
@@ -222,13 +225,22 @@ const AppTabNavigator = () => (
 // --- ROOT NAVIGATOR ---
 export const RootNavigator = () => {
   const dispatch = useAppDispatch();
-  const { token, user, loading } = useAppSelector(state => state.auth);
+  const { token, user, isCheckingAuth } = useAppSelector(state => state.auth);
 
   useEffect(() => {
-    dispatch(loadUser());
+    const init = async () => {
+      try {
+        await dispatch(loadUser());
+      } catch (error) {
+        console.error('Error loading user session:', error);
+      } finally {
+        await BootSplash.hide({ fade: true });
+      }
+    };
+    init();
   }, [dispatch]);
 
-  if (loading && !token) {
+  if (isCheckingAuth) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6366f1" />
@@ -253,22 +265,6 @@ export const RootNavigator = () => {
             <RootStack.Screen
               name="Onboarding"
               component={OnboardingNavigator}
-              options={{
-                headerShown: true,
-                title: 'Personalize Feed',
-                headerTintColor: '#1e293b',
-                headerStyle: {
-                  backgroundColor: '#ffffff',
-                  elevation: 0,
-                  shadowOpacity: 0,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#f1f5f9',
-                },
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  color: '#1e293b',
-                },
-              }}
             />
             <RootStack.Screen
               name="CourseDetails"

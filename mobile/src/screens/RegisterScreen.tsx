@@ -26,6 +26,9 @@ export const RegisterScreen = ({ navigation }: Props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
 
@@ -33,16 +36,67 @@ export const RegisterScreen = ({ navigation }: Props) => {
     dispatch(clearAuthError());
   }, [dispatch]);
 
+  const validateEmail = (text: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(text);
+  };
+
+  const getFriendlyError = (err: string | null) => {
+    if (!err) return null;
+    if (err.includes('User already exists') || err.includes('exists')) {
+      // Inline error below field, do not display in global banner
+      return null;
+    }
+    if (err.toLowerCase().includes('network') || err.toLowerCase().includes('timeout') || err.toLowerCase().includes('connect')) {
+      return 'Network error. Please check your internet connection.';
+    }
+    return err;
+  };
+
   const handleRegister = () => {
-    if (!name || !email || !password) {
-      Alert.alert('Validation Error', 'Please fill in all fields');
-      return;
+    let isValid = true;
+
+    if (!name.trim()) {
+      setNameError('Full name is required');
+      isValid = false;
+    } else if (name.trim().length < 2) {
+      setNameError('Name must be at least 2 characters long');
+      isValid = false;
+    } else {
+      setNameError('');
     }
-    if (password.length < 6) {
-      Alert.alert('Validation Error', 'Password must be at least 6 characters long');
-      return;
+
+    if (!email) {
+      setEmailError('Email address is required');
+      isValid = false;
+    } else if (!validateEmail(email.trim())) {
+      setEmailError('Please enter a valid email address');
+      isValid = false;
+    } else {
+      setEmailError('');
     }
-    dispatch(registerUser({ name: name.trim(), email: email.trim(), password }));
+
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (!isValid) return;
+
+    dispatch(registerUser({ name: name.trim(), email: email.trim(), password }))
+      .unwrap()
+      .catch((err) => {
+        const errorMsg = err || '';
+        if (errorMsg.includes('User already exists') || errorMsg.includes('exists')) {
+          setEmailError('An account with this email address already exists. Please log in instead.');
+          dispatch(clearAuthError());
+        }
+      });
   };
 
   return (
@@ -57,47 +111,64 @@ export const RegisterScreen = ({ navigation }: Props) => {
           <Text style={styles.subtitle}>Begin your personalized learning journey</Text>
         </View>
 
+        {error && getFriendlyError(error) ? (
+          <Text style={styles.errorText}>⚠️ {getFriendlyError(error)}</Text>
+        ) : null}
+
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Register</Text>
-
-          {error && <Text style={styles.errorText}>⚠️ {error}</Text>}
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Full Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, nameError ? styles.inputError : null]}
               placeholder="Himanshu Kumar"
               placeholderTextColor="#94a3b8"
               value={name}
-              onChangeText={setName}
+              onChangeText={(text) => {
+                setName(text);
+                if (nameError) setNameError('');
+                if (error) dispatch(clearAuthError());
+              }}
               autoCapitalize="words"
             />
+            {nameError ? <Text style={styles.fieldErrorText}>{nameError}</Text> : null}
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email Address</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="name@domain.com"
               placeholderTextColor="#94a3b8"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (emailError) setEmailError('');
+                if (error) dispatch(clearAuthError());
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
             />
+            {emailError ? <Text style={styles.fieldErrorText}>{emailError}</Text> : null}
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Password (min 6 characters)</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, passwordError ? styles.inputError : null]}
               placeholder="••••••••"
               placeholderTextColor="#94a3b8"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (passwordError) setPasswordError('');
+                if (error) dispatch(clearAuthError());
+              }}
               secureTextEntry
               autoCapitalize="none"
             />
+            {passwordError ? <Text style={styles.fieldErrorText}>{passwordError}</Text> : null}
           </View>
 
           <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={loading}>
@@ -195,6 +266,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#475569',
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  fieldErrorText: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 4,
   },
   registerButton: {
     backgroundColor: '#6366f1',

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { updateLessonProgressState, fetchCourseProgress } from '../store/progressSlice';
+import { fetchCourseDetail } from '../store/courseSlice';
 import quizService from '../services/quizService';
 import { Quiz } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -30,7 +31,7 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
   const { courseId, lessonId } = route.params;
   const dispatch = useAppDispatch();
 
-  const { currentCourse } = useAppSelector((state) => state.courses);
+  const { currentCourse, loading: coursesLoading } = useAppSelector((state) => state.courses);
   const { currentCourseProgress } = useAppSelector((state) => state.progress);
 
   const [activeLessonId, setActiveLessonId] = useState(lessonId);
@@ -38,9 +39,27 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
   const [quizLoading, setQuizLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Fetch course details if not loaded or mismatch
+  useEffect(() => {
+    if (courseId && (!currentCourse || currentCourse._id !== courseId)) {
+      dispatch(fetchCourseDetail(courseId));
+    }
+  }, [courseId, currentCourse, dispatch]);
+
+  // Set activeLessonId to first lesson if not provided
+  useEffect(() => {
+    if (currentCourse && currentCourse.lessons && currentCourse.lessons.length > 0) {
+      if (!activeLessonId || !currentCourse.lessons.some((l) => l._id === activeLessonId)) {
+        setActiveLessonId(currentCourse.lessons[0]._id);
+      }
+    }
+  }, [currentCourse, activeLessonId]);
+
   // Sync route param into local state
   useEffect(() => {
-    setActiveLessonId(lessonId);
+    if (lessonId) {
+      setActiveLessonId(lessonId);
+    }
   }, [lessonId]);
 
   // Fetch current lesson's quiz details
@@ -67,7 +86,16 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
     dispatch(fetchCourseProgress(courseId));
   }, [courseId, activeLessonId, dispatch]);
 
-  if (!currentCourse || !currentCourse.lessons) {
+  if (coursesLoading && (!currentCourse || currentCourse._id !== courseId)) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#6366f1" />
+        <Text style={{ marginTop: 10, color: '#64748b' }}>Loading course content...</Text>
+      </View>
+    );
+  }
+
+  if (!currentCourse || !currentCourse.lessons || currentCourse._id !== courseId) {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>No course loaded</Text>
@@ -82,8 +110,8 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
 
   // Find next lesson
   const activeIndex = lessons.findIndex((l) => l._id === activeLesson._id);
-  const nextLesson = activeIndex !== -1 && activeIndex < lessons.length - 1 
-    ? lessons[activeIndex + 1] 
+  const nextLesson = activeIndex !== -1 && activeIndex < lessons.length - 1
+    ? lessons[activeIndex + 1]
     : null;
 
   const handleMarkCompleted = async () => {
@@ -118,12 +146,12 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
             <ActivityIndicator size="small" color="#ffffff" style={styles.videoSpinner} />
             <Text style={styles.videoCanvasText}>📺 Streaming video source...</Text>
             <TouchableOpacity onPress={() => setIsPlaying(false)} style={styles.videoBtn}>
-              <Text style={styles.videoBtnText}>Pause ⏸️</Text>
+              <Text style={styles.videoBtnText}>Pause</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={[styles.videoCanvas, styles.videoPoster]}>
-            <Text style={styles.playIcon}>▶️</Text>
+            <Text style={styles.playIcon}>▶</Text>
             <Text style={styles.videoCanvasText}>Simulated Lesson Video</Text>
             <TouchableOpacity onPress={() => setIsPlaying(true)} style={styles.videoPlayBtn}>
               <Text style={styles.videoBtnText}>Start Watching</Text>
@@ -143,7 +171,7 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
         <View style={styles.progressBanner}>
           <Text style={styles.statusLabel}>Status:</Text>
           <Text style={[styles.statusValue, isCompleted ? styles.completedText : styles.pendingText]}>
-            {isCompleted ? '✅ Completed' : '⏳ In Progress'}
+            {isCompleted ? 'Completed' : 'In Progress'}
           </Text>
         </View>
 
@@ -160,7 +188,7 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
             <ActivityIndicator size="small" color="#6366f1" style={{ marginVertical: 10 }} />
           ) : associatedQuiz ? (
             <View style={styles.quizBox}>
-              <Text style={styles.quizHeadline}>📝 Lesson Assessment Required</Text>
+              <Text style={styles.quizHeadline}>Lesson Assessment Required</Text>
               <Text style={styles.quizSub}>
                 {activeLessonProgress?.quizScore !== undefined && activeLessonProgress.quizScore !== null
                   ? `Best Score: ${activeLessonProgress.quizScore}% (${isCompleted ? 'Passed' : 'Failed'})`
@@ -177,9 +205,9 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
                 }
               >
                 <Text style={styles.quizBtnText}>
-                  {activeLessonProgress?.quizScore !== undefined && activeLessonProgress.quizScore !== null 
-                    ? 'Retake Quiz ✍️' 
-                    : 'Start Lesson Quiz ✍️'}
+                  {activeLessonProgress?.quizScore !== undefined && activeLessonProgress.quizScore !== null
+                    ? 'Retake Quiz'
+                    : 'Start Lesson Quiz'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -211,11 +239,11 @@ export const LessonPlayerScreen = ({ navigation, route }: Props) => {
               <Text style={styles.nextLabel}>Next Up:</Text>
               <Text style={styles.nextTitle} numberOfLines={1}>{nextLesson.title}</Text>
             </View>
-            <Text style={styles.nextArrow}>➡️</Text>
+            <Text style={styles.nextArrow}>{'>'}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.congratsCard}>
-            <Text style={styles.congratsTitle}>🎉 You reached the end!</Text>
+            <Text style={styles.congratsTitle}>You reached the end!</Text>
             <Text style={styles.congratsSub}>If all lessons are marked checked, you have completed the course!</Text>
             <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
               <Text style={styles.backBtnText}>Back to Course Syllabus</Text>
@@ -247,6 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e293b',
   },
   playIcon: {
+    color: "white",
     fontSize: 44,
     marginBottom: 6,
   },

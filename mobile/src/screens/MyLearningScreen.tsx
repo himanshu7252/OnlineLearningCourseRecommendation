@@ -82,7 +82,7 @@ export const MyLearningScreen = ({ navigation }: Props) => {
                       onPress={() => handleResume(course._id, item.lastAccessedLesson)}
                     >
                       <Text style={styles.actionBtnText}>
-                        {item.status === 'COMPLETED' ? 'Review Lessons 🔄' : 'Continue Learning ▶️'}
+                        {item.status === 'COMPLETED' ? 'Review Lessons' : 'Continue Learning'}
                       </Text>
                     </TouchableOpacity>
                   </View>

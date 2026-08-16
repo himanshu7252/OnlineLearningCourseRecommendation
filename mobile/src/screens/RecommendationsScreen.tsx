@@ -140,7 +140,6 @@ export const RecommendationsScreen = ({ navigation }: Props) => {
                 );
                 return (
                   <View key={skill} style={[styles.skillTag, hasSkill ? styles.hasSkill : styles.lacksSkill]}>
-                    <Text style={styles.skillEmoji}>{hasSkill ? '✅' : '⚠️'}</Text>
                     <Text style={[styles.skillTagText, hasSkill ? styles.hasSkillText : styles.lacksSkillText]}>
                       {skill}
                     </Text>
@@ -166,7 +165,7 @@ export const RecommendationsScreen = ({ navigation }: Props) => {
             ))
           ) : (
             <View style={styles.perfectMatchCard}>
-              <Text style={styles.perfectText}>🎉 All skills possessed! You are qualified for this role.</Text>
+              <Text style={styles.perfectText}> All skills possessed! You are qualified for this role.</Text>
             </View>
           )}
         </ScrollView>

@@ -72,7 +72,7 @@ export const QuizScreen = ({ navigation, route }: Props) => {
   if (error || !quiz) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>⚠️ {error || 'Quiz not found'}</Text>
+        <Text style={styles.errorText}>{error || 'Quiz not found'}</Text>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Text style={styles.backBtnText}>Go Back</Text>
         </TouchableOpacity>
@@ -218,7 +218,7 @@ export const QuizScreen = ({ navigation, route }: Props) => {
             disabled={currentIdx === 0}
             onPress={handlePrev}
           >
-            <Text style={styles.navBtnText}>◀️ Back</Text>
+            <Text style={styles.navBtnText}>◀ Back</Text>
           </TouchableOpacity>
 
           {currentIdx < totalQuestions - 1 ? (
@@ -227,7 +227,7 @@ export const QuizScreen = ({ navigation, route }: Props) => {
               disabled={!selectedAnswer}
               onPress={handleNext}
             >
-              <Text style={styles.navBtnText}>Next ▶️</Text>
+              <Text style={styles.navBtnText}>Next ▶</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -238,7 +238,7 @@ export const QuizScreen = ({ navigation, route }: Props) => {
               {submitting ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.submitBtnText}>Submit Answers 🚀</Text>
+                <Text style={styles.submitBtnText}>Submit Answers</Text>
               )}
             </TouchableOpacity>
           )}

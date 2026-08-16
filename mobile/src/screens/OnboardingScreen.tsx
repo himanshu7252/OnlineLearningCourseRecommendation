@@ -154,14 +154,14 @@ export const OnboardingScreen = () => {
                   key={interest}
                   style={[
                     styles.chip,
-                    isSelected && styles.selectedChip,
+                    isSelected && styles.selectedInterestChip,
                   ]}
                   onPress={() => toggleInterest(interest)}
                 >
                   <Text
                     style={[
                       styles.chipText,
-                      isSelected && styles.selectedChipText,
+                      isSelected && styles.selectedInterestChipText,
                     ]}
                   >
                     {isSelected ? '✓ ' : ''}{interest}
@@ -183,14 +183,14 @@ export const OnboardingScreen = () => {
                   key={skill}
                   style={[
                     styles.chip,
-                    isSelected && styles.selectedChip,
+                    isSelected && styles.selectedSkillChip,
                   ]}
                   onPress={() => toggleSkill(skill)}
                 >
                   <Text
                     style={[
                       styles.chipText,
-                      isSelected && styles.selectedChipText,
+                      isSelected && styles.selectedSkillChipText,
                     ]}
                   >
                     {isSelected ? '✓ ' : ''}{skill}
@@ -216,12 +216,12 @@ export const OnboardingScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f8fafc',
   },
   container: {
     padding: 24,
     paddingBottom: 40,
-    paddingTop: 60
+    paddingTop: 60,
   },
   header: {
     alignItems: 'center',
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#f8fafc',
+    color: '#1e293b',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#64748b',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
@@ -246,10 +246,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#cbd5e1',
+    color: '#1e293b',
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+    borderBottomColor: '#e2e8f0',
     paddingBottom: 6,
   },
   row: {
@@ -258,50 +258,58 @@ const styles = StyleSheet.create({
   },
   optionButton: {
     flex: 1,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#cbd5e1',
     paddingVertical: 12,
     borderRadius: 8,
     marginHorizontal: 4,
     alignItems: 'center',
   },
   selectedOptionButton: {
-    backgroundColor: '#6366f1',
-    borderColor: '#818cf8',
+    backgroundColor: '#e0e7ff',
+    borderColor: '#6366f1',
   },
   optionText: {
-    color: '#94a3b8',
+    color: '#475569',
     fontWeight: '600',
   },
   selectedOptionText: {
-    color: '#ffffff',
+    color: '#4338ca',
   },
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   chip: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#cbd5e1',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
     margin: 4,
   },
-  selectedChip: {
-    backgroundColor: '#4338ca',
-    borderColor: '#6366f1',
+  selectedInterestChip: {
+    backgroundColor: '#eff6ff',
+    borderColor: '#bfdbfe',
+  },
+  selectedInterestChipText: {
+    color: '#1e40af',
+    fontWeight: 'bold',
+  },
+  selectedSkillChip: {
+    backgroundColor: '#faf5ff',
+    borderColor: '#e9d5ff',
+  },
+  selectedSkillChipText: {
+    color: '#6b21a8',
+    fontWeight: 'bold',
   },
   chipText: {
-    color: '#cbd5e1',
+    color: '#475569',
     fontSize: 14,
     fontWeight: '500',
-  },
-  selectedChipText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
   },
   saveButton: {
     backgroundColor: '#6366f1',

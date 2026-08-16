@@ -73,7 +73,6 @@ export const ExploreScreen = ({ navigation }: Props) => {
         {/* Search Header */}
         <View style={styles.searchHeader}>
           <View style={styles.searchBar}>
-            <Text style={styles.searchIcon}>🔍</Text>
             <TextInput
               style={styles.searchInput}
               placeholder="Search courses, tags, instructors..."

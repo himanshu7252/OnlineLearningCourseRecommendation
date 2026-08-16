@@ -117,7 +117,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-            <Text style={styles.logoutBtnText}>Sign Out 🚪</Text>
+            <Text style={styles.logoutBtnText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

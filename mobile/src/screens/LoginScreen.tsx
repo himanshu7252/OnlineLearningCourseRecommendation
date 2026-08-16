@@ -25,6 +25,8 @@ interface Props {
 export const LoginScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
 
@@ -32,12 +34,57 @@ export const LoginScreen = ({ navigation }: Props) => {
     dispatch(clearAuthError());
   }, [dispatch]);
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Validation Error', 'Please fill in all fields');
-      return;
+  const validateEmail = (text: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(text);
+  };
+
+  const getFriendlyError = (err: string | null) => {
+    if (!err) return null;
+    if (err.includes('User does not exist') || err.includes('Incorrect password')) {
+      // Inline errors below fields, do not display in global banner
+      return null;
     }
-    dispatch(loginUser({ email: email.trim(), password }));
+    if (err.toLowerCase().includes('network') || err.toLowerCase().includes('timeout') || err.toLowerCase().includes('connect')) {
+      return 'Network error. Please check your internet connection.';
+    }
+    return err;
+  };
+
+  const handleLogin = () => {
+    let isValid = true;
+
+    if (!email) {
+      setEmailError('Email address is required');
+      isValid = false;
+    } else if (!validateEmail(email.trim())) {
+      setEmailError('Please enter a valid email address');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (!isValid) return;
+
+    dispatch(loginUser({ email: email.trim(), password }))
+      .unwrap()
+      .catch((err) => {
+        const errorMsg = err || '';
+        if (errorMsg.includes('User does not exist')) {
+          setEmailError('User does not exist');
+          dispatch(clearAuthError());
+        } else if (errorMsg.includes('Incorrect password')) {
+          setPasswordError('Incorrect password');
+          dispatch(clearAuthError());
+        }
+      });
   };
 
   return (
@@ -48,40 +95,59 @@ export const LoginScreen = ({ navigation }: Props) => {
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.headerArea}>
           <Text style={styles.logoIcon}>🎓</Text>
-          <Text style={styles.title}>EduRec Mobile</Text>
+          <Text style={styles.title}>EduRec</Text>
           <Text style={styles.subtitle}>Personalized Course Learning Platform</Text>
         </View>
+
+        {error && getFriendlyError(error) ? (
+          <Text style={styles.errorText}> {getFriendlyError(error)}</Text>
+        ) : null}
 
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Sign In</Text>
 
-          {error && <Text style={styles.errorText}>⚠️ {error}</Text>}
-
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email Address</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="name@domain.com"
               placeholderTextColor="#94a3b8"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (emailError) setEmailError('');
+                if (error) dispatch(clearAuthError());
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
             />
+            {emailError ? <Text style={styles.fieldErrorText}>{emailError}</Text> : null}
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Password</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, passwordError ? styles.inputError : null]}
               placeholder="••••••••"
               placeholderTextColor="#94a3b8"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (passwordError) setPasswordError('');
+                if (error) dispatch(clearAuthError());
+              }}
               secureTextEntry
               autoCapitalize="none"
             />
+            {passwordError ? <Text style={styles.fieldErrorText}>{passwordError}</Text> : null}
           </View>
+
+          <TouchableOpacity
+            style={styles.forgotPasswordContainer}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
             {loading ? (
@@ -151,14 +217,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    color: '#f87171',
-    backgroundColor: '#451a1a',
+    color: '#ef4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
     padding: 12,
     borderRadius: 8,
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#7f1d1d',
+    borderColor: '#ef4444',
+    textAlign: 'center',
   },
   inputGroup: {
     marginBottom: 16,
@@ -178,6 +246,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#475569',
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  fieldErrorText: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 4,
   },
   loginButton: {
     backgroundColor: '#6366f1',
@@ -204,6 +280,16 @@ const styles = StyleSheet.create({
     color: '#818cf8',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginTop: -8,
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: '#818cf8',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 
